@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 02:25:54 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/12 19:16:47 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/16 06:17:24 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@ typedef struct	s_flags
 	int				dash;
 	int				zero;
 	int				astr;
-	unsigned int	minwidth;
-	unsigned int	maxwidth;
+	int				prec;
+	int				neg;
+	long int		minwidth;
+	long int		maxwidth;
 }				t_flags;
 
 typedef struct	s_arglst
@@ -43,7 +45,11 @@ int					ft_widthparser(char const *width);
 unsigned long		ft_converter(char cs);
 unsigned long		ft_charprinter(void);
 unsigned long		ft_strprinter(void);
-void				ft_foutput(char *str, size_t strlen, size_t fillwidth);
+unsigned long		ft_intprinter(void);
+void				ft_foutput(char *str, int strlen, size_t fillwidth);
+size_t				ft_onlyspaces(char *str, int strlen, size_t fillwidth);
+size_t				ft_onlyzeros(char *str, int strlen);
+size_t				ft_spacesandzeros(char *str, int strlen);
 
 // int	ft_minmax(int num);
 
