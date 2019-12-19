@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 23:42:36 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/16 06:43:13 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 04:52:12 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int	main(void)
 	int Xadd2 = 0x4F + 0x4B;
 	int	*q = &qn;
 
-	printf("1 %%c:\t\t%C\n", c);
+	/*printf("1 %%c:\t\t%C\n", c);
 	printf("2 %%s:\t\t%-3.1s\n", str);
 	printf("3 %%p:\t\t%-20p\n", str);
 	printf("4 %%D:\t\t%03D\n", d);
@@ -75,11 +75,32 @@ int	main(void)
 	printf("16 Múltiples flags %.19%%s%y ahora qué?\n", "test");
 	i = printf("17 Chartest: De momento%010cno es más que\n", 'd');
 	printf("17.5 Size of 17 es: %d\n", i);
-	i = printf("19 %*s|\n", -10, "nueve");
+	i = printf("19 %*s|\n", -10, NULL);
 	printf("19.5 Size of 19 es: %d\n", i);
-	i= printf("20 %5.5d|\n", -4242);
+	i= printf("20 %.5d|\n", -4242);
 	printf("20.5 Size of 20 es: %d\n", i);
+	printf("21 ^.^/%49c^.^/\n", 'g');
+	i = printf("21.5 Size of 21 es: %d\n", i);
+	i = printf("%.16lld", -440432320);
+	 printf("\nSize of último es: %d\n", i);
+	 i = printf("%0*d", 10, 42);
+	 printf("\nSize of último  es: %d\n", i);
+	i = printf("%-5.d", 0);
+   printf("\nSize of último es: %d\n", i);
+   i = printf("%-3d", 0);
+   printf("\n%d\n", i);
+   i = printf("%03.*d", -15, 1);
+   printf("\n%d\n", i); 
+   printf("\n%.0d\n", 0, 0);
+  printf("%-8.3d\n", 0);*/
+ i = printf("%");
+ printf("\n%d\n", i);
 
+/* int test = 42;
+
+ char *testptr = test;
+
+ printf("%zu", sizeof(*testptr));*/
 
 	return (0);
 }

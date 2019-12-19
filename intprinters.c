@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 01:34:05 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/16 06:49:19 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 01:14:03 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,25 +39,21 @@
 ** appropriate. However, if the case is no filler, the full ft_itoa string will
 ** be sent to be printed. In cases with spaces, 1 space will be subtracted from
 ** the assigned number of spaces for positive numbers to make room for the minus
-** sign. In cases with only zeros on the left as filler, one will be added to the
+** sign. In cases of only zeros on the left as filler, one will be added to the
 ** return value of bytes printed, as no zeros are deleted for the minus sign and
 ** the minus is still added before the zeros. In mixed space/zero cases, a space
 ** will be subtracted from the total to make room for the minus sign.
 */
 
-unsigned long	ft_intprinter(void)
+int	ft_intprinter(long long int num, char *numstr)
 {
-	char			*numstr;
-	int				num;
-	int				strlen;
-	unsigned long	bytes;
+	int	strlen;
+	int	bytes;
 
-	num = va_arg(g_arglst.arg, int);
-	if (num < 0)
-		g_flags.neg = 1;
-	numstr = ft_itoa(num);
 	strlen = num < 0 ? (ft_strlen(numstr) - 1) : ft_strlen(numstr);
-	if (g_flags.minwidth <= strlen && strlen >= g_flags.maxwidth)
+	if (num == 0 && g_flags.maxwidth == 0 && g_flags.usrdef && !g_flags.punt)
+		ft_filler(' ', bytes = g_flags.minwidth);
+	else if (g_flags.minwidth <= strlen && strlen >= g_flags.maxwidth)
 		bytes = ft_putstr(numstr, (num < 0 ? strlen + 1 : strlen));
 	else if (g_flags.minwidth > strlen && strlen >= g_flags.maxwidth)
 		bytes = ft_onlyspaces(numstr, strlen, (g_flags.minwidth - strlen));
@@ -69,9 +65,9 @@ unsigned long	ft_intprinter(void)
 	return (bytes);
 }
 
-size_t			ft_onlyspaces(char *str, int strlen, size_t fillwidth)
+int	ft_onlyspaces(char *str, int strlen, size_t fillwidth)
 {
-	size_t	bytes;
+	int	bytes;
 
 	bytes = g_flags.minwidth;
 	fillwidth = g_flags.neg ? fillwidth - 1 : fillwidth;
@@ -84,27 +80,41 @@ size_t			ft_onlyspaces(char *str, int strlen, size_t fillwidth)
 	}
 	else
 	{
-		ft_filler(' ', fillwidth);
+		if (!g_flags.zero || g_flags.usrdef)
+			ft_filler(' ', fillwidth);
 		if (g_flags.neg)
 			write(1, "-", 1);
+		if (g_flags.zero && !g_flags.usrdef)
+			ft_filler('0', fillwidth);
 		ft_putstr((g_flags.neg ? &str[1] : str), strlen);
 	}
 	return (bytes);
 }
 
-size_t			ft_onlyzeros(char *str, int strlen)
+int	ft_onlyzeros(char *str, int strlen)
 {
 	if (g_flags.neg)
 		write(1, "-", 1);
+	if (g_flags.punt)
+	{
+		write(1, "0x", 2);
+		str = str + 2;
+		strlen = strlen - 2;
+	}
 	ft_filler('0', (g_flags.maxwidth - strlen));
 	ft_putstr((g_flags.neg ? &str[1] : str), strlen);
-	return (g_flags.neg == 1 ? g_flags.maxwidth + 1 : g_flags.maxwidth);
+	if (g_flags.neg)
+		return (g_flags.maxwidth + 1);
+	else if (g_flags.punt)
+		return (g_flags.maxwidth + 2);
+	else
+		return (g_flags.maxwidth);
 }
 
-size_t			ft_spacesandzeros(char *str, int strlen)
+int	ft_spacesandzeros(char *str, int strlen)
 {
-	size_t	bytes;
-	size_t	fillwidth;
+	int	bytes;
+	int	fillwidth;
 
 	bytes = g_flags.minwidth;
 	fillwidth = g_flags.neg ? (g_flags.minwidth - strlen - \

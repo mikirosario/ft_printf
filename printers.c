@@ -6,26 +6,27 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 03:26:57 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/16 01:41:11 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 04:47:52 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
 
 /*
-** If the dash flag has been set, prints the argument passed as char string
-** via the pointer str, entirely if specified minwidth is greater than the
-** string length and the string length is less than the maxwidth specified by
-** the precision ('.') flag, and otherwise up to maxwidth bytes, then prints
-** fillwidth spaces. If the dash flag has not been set, prints fillwidth spaces,
-** or fillwidth zeros if the zero ('0') flag has been set, and then prints the
-** argument passed as char string via the pointer str, entirely if the specified
-** minwidth is greater than the string length and the string length is less than
-** the maxwidth specified by the precision ('.') flag, and otherwise up to
-** maxwidth bytes.
+** Prints the argument and then filler, or the filler and then the argument,
+** depending on whether the dash flag has been set. Fillwidth filler characters
+** are printed.
+**
+** If the specified minwidth is greater than the string length and the string
+** length is less than the maxwidth specified by the precision ('.') flag,
+** strlen bytes are printed, otherwise only up to maxwidth bytes are printed.
+**
+** If the zero ('0') flag has been set and the filler is printed before the
+** argument, then 0s are printed instead of spaces, otherwise spaces are
+** printed.
 */
 
-void			ft_foutput(char *str, int strlen, size_t fillwidth)
+void	ft_foutput(char *str, int strlen, size_t fillwidth)
 {
 	if (g_flags.dash)
 	{
@@ -46,21 +47,21 @@ void			ft_foutput(char *str, int strlen, size_t fillwidth)
 **
 ** If a dash flag has been set, prints the argument passed as char and then
 ** width filler (by default, filler is ' '). If the dash flag has not been set
-** (is 0), prints width filler, assigning '0' to filler if thee zero flag has
+** (is 0), prints width filler, assigning '0' to filler if the zero flag has
 ** been set, and then the argument passed as char.
 **
 ** Returns number of bytes printed.
 */
 
-unsigned long	ft_charprinter(void)
+int		ft_charprinter(void)
 {
 	char			filler;
 	int				width;
 	int				c;
 
-	c = va_arg(g_arglst.arg, int);
+	c = g_flags.pct ? '%' : va_arg(g_arglst.arg, int);
 	filler = ' ';
-	width = g_flags.minwidth > 0 && g_flags.minwidth <= 4294967295 ? \
+	width = g_flags.minwidth > 0 && g_flags.minwidth <= 2147483647 ? \
 			g_flags.minwidth - 1 : 0;
 	if (g_flags.dash)
 	{
@@ -91,17 +92,19 @@ unsigned long	ft_charprinter(void)
 ** Returns number of bytes printed.
 */
 
-unsigned long	ft_strprinter(void)
+int		ft_strprinter(void)
 {
 	char			*str;
 	int				strlen;
 	int				fillwidth;
 
-	str = va_arg(g_arglst.arg, char *);
+	if (!(str = va_arg(g_arglst.arg, char *)))
+		str = "(null)";
 	strlen = ft_strlen(str);
-	g_flags.maxwidth = g_flags.prec ? g_flags.maxwidth : strlen;
+	g_flags.maxwidth = g_flags.prec && g_flags.usrdef ? g_flags.maxwidth : strlen;
 	if ((g_flags.minwidth <= strlen && strlen <= g_flags.maxwidth) ||
-			(g_flags.minwidth < strlen && strlen > g_flags.maxwidth))
+			((g_flags.minwidth < strlen && strlen > g_flags.maxwidth) && \
+			(g_flags.minwidth <= g_flags.maxwidth)))
 	{
 		ft_putstr(str, (strlen <= g_flags.maxwidth ? \
 					strlen : g_flags.maxwidth));
