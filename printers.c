@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 03:26:57 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 20:26:24 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 23:06:36 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,22 @@
 
 /*
 ** Prints the argument and then filler, or the filler and then the argument,
-** depending on whether the dash flag has been set. Fillwidth filler characters
-** are printed.
+** depending on whether the dash ('-') flag has been set. Fillwidth filler
+** characters are printed.
 **
-** If the specified minwidth is greater than the string length and the string
-** length is less than the maxwidth specified by the precision ('.') flag,
-** strlen bytes are printed, otherwise only up to maxwidth bytes are printed.
+** If the specified width is greater than the string length and the string
+** length is less than the specified precision value, strlen bytes (the
+** entire string) are printed; otherwise (string length is longer than
+** the minimum width or longer than the precision value), only up to precision value
+** bytes of the string are printed.
 **
-** If the zero ('0') flag has been set and the filler is printed before the
-** argument, then 0s are printed instead of spaces, otherwise spaces are
-** printed.
+** The filler goes after the text string if the dash ('-') flag is active (to
+** justify the text left); otherwise, it goes before to justify the text
+** right.
+**
+** If the zero ('0') flag has been set and the dash ('-') flag has not been set,
+** zeros are printed as filler, otherwise spaces are printed. That is, zeros can
+** only be printed as filler for right-justified text.
 */
 
 void	ft_foutput(char *str, int strlen, size_t fillwidth)
@@ -81,16 +87,53 @@ int		ft_charprinter(void)
 }
 
 /*
-** Prints current argument passed as string.
+** Prints the current argument passed as a string. Precision determmines the
+** number of string bytes to be printed. Width determines the amount of
+** printable space, and will always be at least the string length.
 **
-** If a dash flag has been set, prints  strlen (now called 'len', thanks
-** Norminette ¬¬) or maxwidth (precision) chars from str, as appropriate (see
-** case chart), then fills the remainder with spaces on the right. Otherwise
-** fills fillwidth spaces with spaces, or with 0s if the zero flag has been set,
-** and then outputs either strlen or maxwidth chars on the right, as
-** appropriate.
+** If a precision value of zero has been set by the user, an empty string is
+** passed and the argument is not retrieved, but the  next argument in the
+** global argument list is called.
 **
-** Outputs number of bytes printed.
+** If the argument to be formatted is a NULL pointer, "(null)" is passed.
+**
+** Otherwise, a character pointer to the argument is passed.
+**
+** Note that if a user-defined precision value has not been set, the
+** precision value here defaults to strlen.
+**
+** Strings are divided into two case types.
+**
+** 1. Just the string, or part of it, is printed. No filler spaces/zeros.
+** 2. The string, or part of it, is printed with filler spaces/zeros.
+**
+** Case 1 occurs when specified width is less than or equal to strlen and
+** strlen is less than or equal to the precision value or when width is
+** less than strlen and strlen is greater than the precision value, and
+** at the same time width is greater than or equal to the precision value.
+**
+** Case 2 covers all otehr cases.
+**
+** For case 1, if the string length is less than or equal to the
+** specified precision value, then it is printed in its entirety. Otherwise
+** precision value characters are printed from the string (it's truncated).
+**
+** For case 2, ft_foutput is called to handle the formatting with fillers
+** The amount of filler will be the specified width minus the strlen, which
+** occupies width spaces, if width is greater than the strlen and the
+** strlen is less than the precision width (meaning the string will not
+** be truncated). That is to say, if the whole string must be printed, it
+** will be width - string length. Otherwise, if the string must be
+** truncated, it will be width - the precision value (which, due to
+** truncation, becomes the effective string length, so it's still the same
+** logic).
+**
+** The function returns bytes printed. In case 1, this will be the
+** precision value if the string was truncated, and strlen if it was
+** not. In case 2, this will always be the specified minimum width.
+**
+** Note: strlen is now called 'len', (thanks Norminette ¬¬).
+** 
 */
 
 int		ft_strprinter(void)
@@ -100,7 +143,10 @@ int		ft_strprinter(void)
 	int				fillwidth;
 
 	if (g_flags.prec && g_flags.usrdef && !g_flags.maxwidth)
+	{
 		str = "";
+		va_arg(g_arglst.arg, char *);
+	}
 	else if (!(str = va_arg(g_arglst.arg, char *)))
 		str = "(null)";
 	len = ft_strlen(str);

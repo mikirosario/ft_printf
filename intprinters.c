@@ -6,15 +6,15 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 01:34:05 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 20:31:22 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 22:13:05 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
 
 /*
-** This function retrieves a decimal integer passed as an argument and converts
-** it to a string using ft_itoa.
+** This function takes an integer and a string representing that integer and
+** prints the string with the format defined by the activated format flags.
 **
 ** The function divides all integers into four format categories:
 ** 1. No filler, just the number.
@@ -24,25 +24,22 @@
 **
 ** If g_flags.minwidth is less than or equal to the number length and the number
 ** length is greater than or equal to g_flags.maxwidth, then it must be case 1.
-** If g_flags.minwidth is greater than the number length and the number length
-** is greater than or equal to g_flags.maxwidth, then it must be case 2. If
-** these cases are ruled out, then out of the remaining possible cases, if
-** g_flags.minwidth is less than or equal to g_flags.maxwidth, it must be case
-** 3. Otherwise (g_flags minwidth is greater than g_flags.maxwidth), it must be
-** case 4.
 **
-** The function formats the number according to the identified format category.
+** Otherwise, if g_flags.minwidth is greater than the number length and the
+** number length is greater than or equal to g_flags.maxwidth, then it must be
+** case 2.
 **
-** If the integer is negative, the function subtracts 1 from the measured
-** strlen, under the assumption that the minus sign from the ft_itoa value will
-** be skipped over and the printer functions will handle adding it back in where
-** appropriate. However, if the case is no filler, the full ft_itoa string will
-** be sent to be printed. In cases with spaces, 1 space will be subtracted from
-** the assigned number of spaces for positive numbers to make room for the minus
-** sign. In cases of only zeros on the left as filler, one will be added to the
-** return value of bytes printed, as no zeros are deleted for the minus sign and
-** the minus is still added before the zeros. In mixed space/zero cases, a space
-** will be subtracted from the total to make room for the minus sign.
+** If both of these cases are ruled out, then out of the remaining possible
+** cases:
+**
+** If g_flags.minwidth is less than or equal to g_flags.maxwidth, it must be
+** case 3.
+**
+** Otherwise (g_flags minwidth is greater than g_flags.maxwidth), it
+** must be case 4.
+**
+** The function formats the number according to the identified format category
+** following this logic. See Readme for more details.
 */
 
 int	ft_intprinter(long long int num, char *numstr)
@@ -64,6 +61,30 @@ int	ft_intprinter(long long int num, char *numstr)
 	free(numstr);
 	return (bytes);
 }
+
+/*
+** This function will format integer strings that only need to be formatted with
+** spaces except for right-justified text for which the user has not defined a
+** precision value and has marked the zero ('0') flag, in which case the spaces
+** will be substituted for zeros.
+**
+** The amount of spaces that need to be printed is given by width - strlen, as
+** strlen takes up spaces of a given minimum width.
+**
+** 1 more space will be subtracted from the assigned number of spaces for
+** negative numbers to make room for the minus sign. If the dash ('-') flag has
+** been set, first the number and then the spaces will be printed. Otherwise, if
+** the zero ('0') flag has not been set OR the precision value is user defined,
+** spaces will be used followed by the number. Otherwise, if the zero flag
+** has been set AND the precision value is not user defined (0 by default),
+** zeros will be printed followed by the number.
+**
+** A minus sign is appended as necessary for negative numbers. It will go after
+** spaces but always before zeros.
+**
+** The number of bytes printed is returned. This will always be width in this
+** case.
+*/
 
 int	ft_onlyspaces(char *str, int strlen, size_t fillwidth)
 {
@@ -91,6 +112,34 @@ int	ft_onlyspaces(char *str, int strlen, size_t fillwidth)
 	return (bytes);
 }
 
+/*
+** This function will format integer strings that only need to be formatted with
+** zeros.
+**
+** In this case, if the number is negative a minus sign is prefixed to
+** it. As there are no spaces to delete to make room for it, the presence of a
+** negative value will add 1 to the number of bytes printed. The function will
+** write its own "-" minus sign as any padded zeros must be between the minus
+** sign and the number proper.
+**
+** If the number is a pointer address, since padded zeros must go after "0x",
+** the function will write its own "0x" and move the string pointer two places
+** forward to skip the number string's native "0x", making sure to subtract 2
+** from the reported 'strlen'. It will then append as many zeros as needed
+** (always the precision value minus the string length) and print the number.
+** If the number is negative, it is printed starting from the second value in
+** the number string to skip the native minus sign.
+**
+** The amount of padding is determined by the precision value (maxwidth), but
+** space will be taken from the specified precision value to make room for
+** the number proper.
+**
+** The number of bytes printed is returned. For positive integers this will
+** normally be the precision value. For negative integers, this will be the
+** precision value + 1 to make room for the minus sign. For pointer
+** addresses, this will be the precision value + 2 to make room for the "0x".
+*/
+
 int	ft_onlyzeros(char *str, int strlen)
 {
 	if (g_flags.neg)
@@ -110,6 +159,28 @@ int	ft_onlyzeros(char *str, int strlen)
 	else
 		return (g_flags.maxwidth);
 }
+
+/*
+** This function will handle mixed cases in which both spaces and zeros
+** will need to be printed.
+**
+** The amount of zeros that need to be printed will always be the
+** specified precision - strlen (as in ft_onlyzeros).
+**
+** The amount of spaces that need to be printed will be indicated by
+** the variable 'fillwidth'. This will be equal to
+** width - strlen - (precision value - strlen). That is to say,
+** subtracting both the number proper and any zeros to be printed
+** from the minimum width, or, in other words, both strlen and padded
+** zeros will use up minimum width space.
+**
+** The value will be justified left or right depending on the dash ('-')
+** flag status. The minus sign ('-') for negative numbers will always
+** be written before any padded zeros, regardless of how the number is
+** justified.
+**
+** The function returns bytes printed, which will always be 'width' bytes.
+*/
 
 int	ft_spacesandzeros(char *str, int strlen)
 {
