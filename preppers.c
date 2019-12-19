@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 23:34:04 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 03:32:55 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 20:29:52 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	ft_flaginit(void)
 	g_flags.prec = 0;
 	g_flags.neg = 0;
 	g_flags.usrdef = 0;
-	g_flags.punt = 0;
+	g_flags.ptr = 0;
 	g_flags.pct = 0;
 	g_flags.minwidth = 0;
 	g_flags.maxwidth = 0;
@@ -67,7 +67,7 @@ int		ft_pintprep(void)
 	unsigned long int	num;
 
 	num = va_arg(g_arglst.arg, unsigned long int);
-	g_flags.punt = 1;
+	g_flags.ptr = 1;
 	if (!num && g_flags.maxwidth == 0 && g_flags.usrdef)
 		numstr = ft_strdup("0x");
 	else if (num == 18446744073709551615u)

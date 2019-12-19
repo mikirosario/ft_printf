@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_printer.c                                       :+:      :+:    :+:   */
+/*   printers.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 03:26:57 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 04:47:52 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 20:26:24 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,40 +83,41 @@ int		ft_charprinter(void)
 /*
 ** Prints current argument passed as string.
 **
-** If a dash flag has been set, outputs strlen or maxwidth (precision) chars
-** from str, as appropriate (see case chart), then fills the remainder with
-** spaces on the right. Otherwise fills fillwidth spaces with spaces, or
-** with 0s if the zero flag has been set, and then outputs either strlen or
-** maxwidth chars on the right, as appropriate.
+** If a dash flag has been set, prints  strlen (now called 'len', thanks
+** Norminette ¬¬) or maxwidth (precision) chars from str, as appropriate (see
+** case chart), then fills the remainder with spaces on the right. Otherwise
+** fills fillwidth spaces with spaces, or with 0s if the zero flag has been set,
+** and then outputs either strlen or maxwidth chars on the right, as
+** appropriate.
 **
-** Returns number of bytes printed.
+** Outputs number of bytes printed.
 */
 
 int		ft_strprinter(void)
 {
 	char			*str;
-	int				strlen;
+	int				len;
 	int				fillwidth;
 
-	if (!(str = va_arg(g_arglst.arg, char *)))
+	if (g_flags.prec && g_flags.usrdef && !g_flags.maxwidth)
+		str = "";
+	else if (!(str = va_arg(g_arglst.arg, char *)))
 		str = "(null)";
-	strlen = ft_strlen(str);
-	g_flags.maxwidth = g_flags.prec && g_flags.usrdef ? g_flags.maxwidth : strlen;
-	if ((g_flags.minwidth <= strlen && strlen <= g_flags.maxwidth) ||
-			((g_flags.minwidth < strlen && strlen > g_flags.maxwidth) && \
-			(g_flags.minwidth <= g_flags.maxwidth)))
+	len = ft_strlen(str);
+	g_flags.maxwidth = g_flags.prec && g_flags.usrdef ? g_flags.maxwidth : len;
+	if ((g_flags.minwidth <= len && len <= g_flags.maxwidth) || \
+	((g_flags.minwidth < len && len > g_flags.maxwidth) && \
+	(g_flags.minwidth <= g_flags.maxwidth)))
 	{
-		ft_putstr(str, (strlen <= g_flags.maxwidth ? \
-					strlen : g_flags.maxwidth));
-		return (g_flags.minwidth < strlen && strlen > g_flags.maxwidth ? \
-				g_flags.maxwidth : strlen);
+		ft_putstr(str, (len <= g_flags.maxwidth ? len : g_flags.maxwidth));
+		return (g_flags.minwidth < len && len > g_flags.maxwidth ? \
+				g_flags.maxwidth : len);
 	}
 	else
 	{
-		fillwidth = g_flags.minwidth > strlen && strlen < g_flags.maxwidth ? \
-					g_flags.minwidth - strlen : \
-					g_flags.minwidth - g_flags.maxwidth;
-		ft_foutput(str, strlen, fillwidth);
+		fillwidth = g_flags.minwidth > len && len < g_flags.maxwidth ? \
+				g_flags.minwidth - len : g_flags.minwidth - g_flags.maxwidth;
+		ft_foutput(str, len, fillwidth);
 	}
 	return (g_flags.minwidth);
 }

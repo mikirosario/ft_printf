@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 01:34:05 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 01:14:03 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/19 20:31:22 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	ft_intprinter(long long int num, char *numstr)
 	int	bytes;
 
 	strlen = num < 0 ? (ft_strlen(numstr) - 1) : ft_strlen(numstr);
-	if (num == 0 && g_flags.maxwidth == 0 && g_flags.usrdef && !g_flags.punt)
+	if (num == 0 && g_flags.maxwidth == 0 && g_flags.usrdef && !g_flags.ptr)
 		ft_filler(' ', bytes = g_flags.minwidth);
 	else if (g_flags.minwidth <= strlen && strlen >= g_flags.maxwidth)
 		bytes = ft_putstr(numstr, (num < 0 ? strlen + 1 : strlen));
@@ -95,7 +95,7 @@ int	ft_onlyzeros(char *str, int strlen)
 {
 	if (g_flags.neg)
 		write(1, "-", 1);
-	if (g_flags.punt)
+	if (g_flags.ptr)
 	{
 		write(1, "0x", 2);
 		str = str + 2;
@@ -105,7 +105,7 @@ int	ft_onlyzeros(char *str, int strlen)
 	ft_putstr((g_flags.neg ? &str[1] : str), strlen);
 	if (g_flags.neg)
 		return (g_flags.maxwidth + 1);
-	else if (g_flags.punt)
+	else if (g_flags.ptr)
 		return (g_flags.maxwidth + 2);
 	else
 		return (g_flags.maxwidth);

@@ -6,13 +6,13 @@
 #    By: mrosario <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/12/14 16:05:23 by mrosario          #+#    #+#              #
-#    Updated: 2019/12/17 23:36:02 by mrosario         ###   ########.fr        #
+#    Updated: 2019/12/19 20:23:16 by mrosario         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libftprintf.a
 
-SRC = ft_printf.c preppers.c printers.c intprinters.c
+SRC = ft_printf.c preppers.c parsers.c printers.c intprinters.c
 
 OBJ = $(SRC:.c=.o)
 
