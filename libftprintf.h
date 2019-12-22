@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 02:25:54 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/22 14:28:01 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 15:17:01 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,8 @@ char					*ft_uintwrite(unsigned long long int num);
 char					*ft_unumstrprep(char *numstr);
 int						ft_xintprep(char cs);
 char					*ft_xintwrite(unsigned long long int num);
-char					*ft_xintprefixhandler(unsigned long long int num, char cs);
+char					*ft_xintprefixhandler\
+							(unsigned long long int num, char cs);
 int						ft_pintprep(char cs);
 int						ft_charprinter(void);
 wint_t					ft_charextract(void);
@@ -86,15 +87,21 @@ wchar_t					*ft_wstrextract(void);
 void					ft_foutput(char *str, int strlen, size_t fillwidth);
 void					ft_wfoutput(wchar_t *str, int strlen, size_t fillwidth);
 int						ft_intprinter(long long int num, char *numstr);
-int						ft_spacesorzeros(char *str, int strlen, size_t fillwidth);
-void					ft_spacesorhelper(char *str, int strlen, size_t fillwidth);
+int						ft_spacesorzeros\
+							(char *str, int strlen, size_t fillwidth);
+void					ft_spacesorhelper\
+							(char *str, int strlen, size_t fillwidth);
 int						ft_onlyzeros(char *str, int strlen);
 int						ft_spacesandzeros(char *str, int strlen);
-void					ft_spacesandhelper(char *str, int strlen, int fillwidth);
-int						ft_xintprinter(long long int num, char *numstr, char cs);
-int						ft_hexspacesorzeros(char *str, int strlen, size_t fillwidth, char cs);
+void					ft_spacesandhelper\
+							(char *str, int strlen, int fillwidth);
+int						ft_xintprinter\
+							(long long int num, char *numstr, char cs);
+int						ft_hexspacesorzeros\
+							(char *str, int strlen, size_t fillwidth, char cs);
 int						ft_hexonlyzeros(char *str, int strlen, char cs);
 int						ft_hexspacesandzeros(char *str, int strlen, char cs);
-void					ft_hexspzerohelper(char *str, int strlen, char cs, int fillwidth);
+void					ft_hexspzerohelper\
+							(char *str, int strlen, char cs, int fillwidth);
 
 #endif
