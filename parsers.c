@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/19 20:23:56 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 20:24:07 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/20 23:05:40 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 
 int			ft_converter(char cs)
 {
+	int	*n;
+
 	if (cs == 'c' || cs == 'C' || cs == '%')
 		return (ft_charprinter());
 	else if (cs == 's')
@@ -31,9 +33,13 @@ int			ft_converter(char cs)
 	else if (cs == 'u')
 		return (ft_uintprep());
 	else if (cs == 'p')
-		return (ft_pintprep());
+		return (ft_pintprep(cs));
 	else if (cs == 'x' || cs == 'X')
 		return (ft_xintprep(cs));
+	else if (cs == 'n')
+		if ((n = va_arg(g_arglst.arg, int *)))
+			*n = g_bytes;
+
 	return (0);
 }
 
@@ -113,6 +119,14 @@ void		ft_flagchecker(char f)
 		g_flags.dash = 1;
 	else if (f == '0')
 		g_flags.zero = 1;
+	else if (f == '#')
+		g_flags.hash = 1;
+	else if (f == '+')
+		g_flags.plus = 1;
+	else if (f == ' ')
+		g_flags.sp = 1;
+	else if (f == '\'')
+		g_flags.apos = 1;
 }
 
 /*
@@ -149,17 +163,17 @@ char const	*ft_flagparser(char const *format)
 	int			skip;
 	char		*flaglst;
 
-	flaglst = "%-.*0123456789";
+	flaglst = "%-.*#+ '0123456789";
 	i = 0;
 	ft_flaginit();
 	while ((ft_strchr(flaglst, format[i])) && format[i])
 	{
 		if (format[i] == '%')
 			break ;
-		else if (format[i] == '-' || format[i] == '0')
+		else if (format[i] == '0' || ((!(ft_isdigit(format[i])) && format[i] != '.' && format[i] != '*')))
 			ft_flagchecker(format[i++]);
-		else if ((ft_isdigit(format[i]) && format[i] != '0') ||
-				format[i] == '.' || format[i] == '*')
+		else /*((ft_isdigit(format[i]) && format[i] != '0') ||
+				format[i] == '.' || format[i] == '*')*/
 		{
 			if (format[i] == '.')
 				g_flags.prec = 1;

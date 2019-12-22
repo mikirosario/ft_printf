@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 03:26:57 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 23:06:36 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/20 18:33:44 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ int		ft_charprinter(void)
 ** less than strlen and strlen is greater than the precision value, and
 ** at the same time width is greater than or equal to the precision value.
 **
-** Case 2 covers all otehr cases.
+** Case 2 covers all other cases.
 **
 ** For case 1, if the string length is less than or equal to the
 ** specified precision value, then it is printed in its entirety. Otherwise

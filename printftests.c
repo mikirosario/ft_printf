@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/03 23:42:36 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 22:27:05 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/20 19:17:55 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,9 @@ int	main(void)
    printf("\n%d\n", i); 
    printf("\n%.0d\n", 0, 0);
   printf("%-8.3d\n", 0);*/
- i = printf("%.s %d", 42, 42);
+	char *testptr;
+ i = printf("%'i", 1000);
+
  printf("\n%d\n", i);
 
 /* int test = 42;

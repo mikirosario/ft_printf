@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 02:25:54 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 20:31:07 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/20 23:05:59 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,10 @@ typedef struct		s_flags
 	int				astr;
 	int				prec;
 	int				neg;
+	int				hash;
+	int				plus;
+	int				sp;
+	int				apos;
 	int				usrdef;
 	int				ptr;
 	int				pct;
@@ -37,6 +41,7 @@ typedef struct		s_arglst
 	va_list	arg;
 }					t_arglst;
 
+int					g_bytes;
 t_flags				g_flags;
 t_arglst			g_arglst;
 
@@ -50,13 +55,17 @@ int					ft_converter(char cs);
 int					ft_intprep(void);
 int					ft_uintprep(void);
 int					ft_xintprep(char cs);
-int					ft_pintprep(void);
+int					ft_pintprep(char cs);
 int					ft_charprinter(void);
 int					ft_strprinter(void);
-int					ft_intprinter(long long int num, char *numstr);
 void				ft_foutput(char *str, int strlen, size_t fillwidth);
-int					ft_onlyspaces(char *str, int strlen, size_t fillwidth);
+int					ft_intprinter(long long int num, char *numstr);
+int					ft_spacesorzeros(char *str, int strlen, size_t fillwidth);
 int					ft_onlyzeros(char *str, int strlen);
 int					ft_spacesandzeros(char *str, int strlen);
+int					ft_xintprinter(long long int num, char *numstr, char cs);
+int					ft_hexspacesorzeros(char *str, int strlen, size_t fillwidth, char cs);
+int					ft_hexonlyzeros(char *str, int strlen, char cs);
+int					ft_hexspacesandzeros(char *str, int strlen, char cs);
 
 #endif

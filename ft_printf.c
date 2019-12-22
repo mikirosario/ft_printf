@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 02:22:12 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 20:44:33 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/20 03:37:12 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,13 @@ int			ft_printf(char const *format, ...)
 {
 	char	*cs;
 	char	*cslst;
-	int		bytes;
 
-	bytes = 0;
-	cslst = "cCsdDiupxX%";
+	g_bytes = 0;
+	cslst = "cCsdDiupxXn%";
 	va_start(g_arglst.arg, format);
 	while (*format)
 	{
-		*format != '%' ? bytes++ : *format;
+		*format != '%' ? g_bytes++ : *format;
 		*format != '%' ? ft_putchar(*format++) : *format;
 		if (*format == '%')
 		{
@@ -61,11 +60,11 @@ int			ft_printf(char const *format, ...)
 			else if ((cs = ft_strchr(cslst, *format)) && *format)
 			{
 				g_flags.pct = *format == '%' ? 1 : g_flags.pct;
-				bytes = bytes + (ft_converter(*cs));
+				g_bytes = g_bytes + (ft_converter(*cs));
 				format++;
 			}
 		}
 	}
 	va_end(g_arglst.arg);
-	return (bytes);
+	return (g_bytes);
 }

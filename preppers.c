@@ -6,11 +6,12 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 23:34:04 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/19 21:20:57 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/21 01:17:28 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
+#include <stdio.h>
 
 /*
 ** This function initializes all global flags at zero. It is called whenever
@@ -35,6 +36,10 @@ void	ft_flaginit(void)
 	g_flags.astr = 0;
 	g_flags.prec = 0;
 	g_flags.neg = 0;
+	g_flags.hash = 0;
+	g_flags.plus = 0;
+	g_flags.sp = 0;
+	g_flags.apos = 0;
 	g_flags.usrdef = 0;
 	g_flags.ptr = 0;
 	g_flags.pct = 0;
@@ -53,12 +58,34 @@ void	ft_flaginit(void)
 int		ft_intprep(void)
 {
 	char	*numstr;
+	char	*del;
 	int		num;
 
 	num = va_arg(g_arglst.arg, int);
 	if (num < 0)
+	{
 		g_flags.neg = 1;
+		g_flags.plus = 0;
+		g_flags.sp = 0;
+	}
+	else if (!num && !g_flags.maxwidth && g_flags.usrdef && (g_flags.plus || g_flags.sp))
+	{
+		write(1, (g_flags.plus ? "+" : " "), 1);
+		return(1);
+	}
 	numstr = ft_itoa(num);
+	if (g_flags.apos)
+	{
+		del = numstr;
+		numstr = ft_thousep(numstr, ',');
+		free(del);
+	}
+	if (g_flags.plus || g_flags.sp)
+	{
+		del = numstr;
+		numstr = ft_strjoin((g_flags.plus ? "+" : " "), numstr);
+		free(del);
+	}
 	return (ft_intprinter((long long int)num, numstr));
 }
 
@@ -73,10 +100,17 @@ int		ft_intprep(void)
 int		ft_uintprep(void)
 {
 	char			*numstr;
+	char			*del;
 	unsigned int	num;
 
 	num = va_arg(g_arglst.arg, unsigned int);
 	numstr = ft_llitoa((long long int)num);
+	if (g_flags.apos)
+	{
+		del = numstr;
+		numstr = ft_thousep(numstr, ',');
+		free(del);
+	}
 	return (ft_intprinter((long long int)num, numstr));
 }
 
@@ -94,13 +128,30 @@ int		ft_uintprep(void)
 int		ft_xintprep(char cs)
 {
 	char			*numstr;
+	char			*del;
 	unsigned int	num;
 
 	num = va_arg(g_arglst.arg, unsigned int);
-	numstr = ft_llitoa_base((long long int)num, 16);
-	if (cs == 'x')
-		ft_strtolower(numstr);
-	return (ft_intprinter((long long int)num, numstr));
+	if (!num && g_flags.maxwidth == 0 && g_flags.usrdef && g_flags.hash)
+		numstr = ft_strdup((cs == 'x' ? "0x" : "0X"));
+	else if (!num && !g_flags.usrdef && g_flags.hash)
+		return (ft_intprinter((long long int)num, (numstr = ft_strdup("0"))));
+	else if (g_flags.hash)
+	{
+		numstr = ft_llitoa_base((long long int)num, 16);
+		del = numstr;
+		if (cs == 'x')
+			ft_strtolower(numstr);
+		numstr = ft_strjoin((cs == 'x' ? "0x" : "0X"), numstr);
+		free(del);
+	}
+	else
+	{
+		numstr = ft_llitoa_base((long long int)num, 16);
+		if (cs == 'x')
+			ft_strtolower(numstr);
+	}
+	return ((cs == 'p' || (g_flags.hash && (cs == 'x' || cs == 'X'))) ? ft_xintprinter((long long int)num, numstr, cs) : ft_intprinter((long long int)num, numstr));
 }
 
 /*
@@ -125,7 +176,7 @@ int		ft_xintprep(char cs)
 ** printing.
 */
 
-int		ft_pintprep(void)
+int		ft_pintprep(char cs)
 {
 	char				*numstr;
 	char				*del;
@@ -145,5 +196,5 @@ int		ft_pintprep(void)
 		numstr = ft_strjoin("0x", numstr);
 		free(del);
 	}
-	return (ft_intprinter((long long int)num, numstr));
+	return (ft_xintprinter((long long int)num, numstr, cs));
 }
