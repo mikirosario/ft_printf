@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/10 03:26:57 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/20 18:33:44 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 13:54:22 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@
 ** If the specified width is greater than the string length and the string
 ** length is less than the specified precision value, strlen bytes (the
 ** entire string) are printed; otherwise (string length is longer than
-** the minimum width or longer than the precision value), only up to precision value
-** bytes of the string are printed.
+** the minimum width or longer than the precision value), only up to precision
+** value bytes of the string are printed.
 **
 ** The filler goes after the text string if the dash ('-') flag is active (to
 ** justify the text left); otherwise, it goes before to justify the text
@@ -48,6 +48,22 @@ void	ft_foutput(char *str, int strlen, size_t fillwidth)
 	}
 }
 
+void	ft_wfoutput(wchar_t *str, int strlen, size_t fillwidth)
+{
+	if (g_flags.dash)
+	{
+		ft_putstr((char const *)str, (g_flags.minwidth > strlen && \
+					strlen < g_flags.maxwidth ? strlen : g_flags.maxwidth));
+		ft_filler(' ', fillwidth);
+	}
+	else
+	{
+		ft_filler((g_flags.zero ? '0' : ' '), fillwidth);
+		ft_putstr((char const *)str, (g_flags.minwidth > strlen && \
+					strlen < g_flags.maxwidth ? strlen : g_flags.maxwidth));
+	}
+}
+
 /*
 ** Prints arguments passed as characters.
 **
@@ -63,9 +79,9 @@ int		ft_charprinter(void)
 {
 	char			filler;
 	int				width;
-	int				c;
+	wint_t			c;
 
-	c = g_flags.pct ? '%' : va_arg(g_arglst.arg, int);
+	c = ft_charextract();
 	filler = ' ';
 	width = g_flags.minwidth > 0 && g_flags.minwidth <= 2147483647 ? \
 			g_flags.minwidth - 1 : 0;
@@ -133,7 +149,6 @@ int		ft_charprinter(void)
 ** not. In case 2, this will always be the specified minimum width.
 **
 ** Note: strlen is now called 'len', (thanks Norminette ¬¬).
-** 
 */
 
 int		ft_strprinter(void)
@@ -142,13 +157,7 @@ int		ft_strprinter(void)
 	int				len;
 	int				fillwidth;
 
-	if (g_flags.prec && g_flags.usrdef && !g_flags.maxwidth)
-	{
-		str = "";
-		va_arg(g_arglst.arg, char *);
-	}
-	else if (!(str = va_arg(g_arglst.arg, char *)))
-		str = "(null)";
+	str = ft_strextract();
 	len = ft_strlen(str);
 	g_flags.maxwidth = g_flags.prec && g_flags.usrdef ? g_flags.maxwidth : len;
 	if ((g_flags.minwidth <= len && len <= g_flags.maxwidth) || \
@@ -164,6 +173,33 @@ int		ft_strprinter(void)
 		fillwidth = g_flags.minwidth > len && len < g_flags.maxwidth ? \
 				g_flags.minwidth - len : g_flags.minwidth - g_flags.maxwidth;
 		ft_foutput(str, len, fillwidth);
+	}
+	return (g_flags.minwidth);
+}
+
+int		ft_wstrprinter(void)
+{
+	wchar_t			*str;
+	int				len;
+	int				fillwidth;
+
+	str = ft_wstrextract();
+	len = ft_wstrlen(str);
+	g_flags.maxwidth = g_flags.prec && g_flags.usrdef ? g_flags.maxwidth : len;
+	if ((g_flags.minwidth <= len && len <= g_flags.maxwidth) || \
+	((g_flags.minwidth < len && len > g_flags.maxwidth) && \
+	(g_flags.minwidth <= g_flags.maxwidth)))
+	{
+		ft_putstr((char const *)str, (len <= g_flags.maxwidth ? \
+					len : g_flags.maxwidth));
+		return (g_flags.minwidth < len && len > g_flags.maxwidth ? \
+				g_flags.maxwidth : len);
+	}
+	else
+	{
+		fillwidth = g_flags.minwidth > len && len < g_flags.maxwidth ? \
+				g_flags.minwidth - len : g_flags.minwidth - g_flags.maxwidth;
+		ft_wfoutput(str, len, fillwidth);
 	}
 	return (g_flags.minwidth);
 }

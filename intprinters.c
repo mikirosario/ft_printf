@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/16 01:34:05 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/20 19:14:30 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 14:28:14 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,13 @@ int	ft_intprinter(long long int num, char *numstr)
 	int	strlen;
 	int	bytes;
 
-	strlen = num < 0 || g_flags.plus || g_flags.sp ? (ft_strlen(numstr) - 1) : ft_strlen(numstr);
+	strlen = num < 0 || g_flags.plus || g_flags.sp ? \
+				(ft_strlen(numstr) - 1) : ft_strlen(numstr);
 	if (num == 0 && g_flags.maxwidth == 0 && g_flags.usrdef && !g_flags.ptr)
 		ft_filler(' ', bytes = g_flags.minwidth);
 	else if (g_flags.minwidth <= strlen && strlen >= g_flags.maxwidth)
-		bytes = ft_putstr(numstr, (num < 0 || g_flags.plus || g_flags.sp ? strlen + 1 : strlen));
+		bytes = ft_putstr(numstr, (num < 0 || g_flags.plus || g_flags.sp ? \
+				strlen + 1 : strlen));
 	else if (g_flags.minwidth > strlen && strlen >= g_flags.maxwidth)
 		bytes = ft_spacesorzeros(numstr, strlen, (g_flags.minwidth - strlen));
 	else if (g_flags.minwidth <= g_flags.maxwidth)
@@ -92,28 +94,23 @@ int	ft_intprinter(long long int num, char *numstr)
 int	ft_spacesorzeros(char *str, int strlen, size_t fillwidth)
 {
 	int	bytes;
+
 	bytes = g_flags.minwidth;
-	fillwidth = g_flags.neg || g_flags.plus || g_flags.sp ? fillwidth - 1 : fillwidth;
+	fillwidth = g_flags.neg || g_flags.plus || \
+				g_flags.sp ? fillwidth - 1 : fillwidth;
 	if (g_flags.dash)
 	{
 		if (g_flags.neg)
 			write(1, "-", 1);
 		if (g_flags.plus || g_flags.sp)
 			write(1, (g_flags.plus ? "+" : " "), 1);
-		ft_putstr((g_flags.neg || g_flags.plus || g_flags.sp ? &str[1] : str), strlen);
+		ft_putstr((g_flags.neg || g_flags.plus || \
+					g_flags.sp ? &str[1] : str), strlen);
 		ft_filler(' ', fillwidth);
 	}
 	else
 	{
-		if (!g_flags.zero || g_flags.usrdef)
-			ft_filler(' ', fillwidth);
-		if (g_flags.neg)
-			write(1, "-", 1);
-		if (g_flags.plus || g_flags.sp)
-			write(1, (g_flags.plus ? "+" : " "), 1);
-		if (g_flags.zero && !g_flags.usrdef)
-			ft_filler('0', fillwidth);
-		ft_putstr((g_flags.neg || g_flags.plus || g_flags.sp ? &str[1] : str), strlen);
+		ft_spacesorhelper(str, strlen, fillwidth);
 	}
 	return (bytes);
 }
@@ -153,8 +150,9 @@ int	ft_onlyzeros(char *str, int strlen)
 	if (g_flags.plus || g_flags.sp)
 		write(1, (g_flags.plus ? "+" : " "), 1);
 	ft_filler('0', (g_flags.maxwidth - strlen));
-	ft_putstr((g_flags.neg ? &str[1] : str), strlen);
-	if (g_flags.neg)
+	ft_putstr((g_flags.neg || g_flags.plus || \
+				g_flags.sp ? &str[1] : str), strlen);
+	if (g_flags.neg || g_flags.plus || g_flags.sp)
 		return (g_flags.maxwidth + 1);
 	else
 		return (g_flags.maxwidth);
@@ -185,13 +183,13 @@ int	ft_onlyzeros(char *str, int strlen)
 
 int	ft_spacesandzeros(char *str, int strlen)
 {
-
 	int	bytes;
 	int	fillwidth;
 
 	bytes = g_flags.minwidth;
-	fillwidth = g_flags.neg ? (g_flags.minwidth - strlen - \
-			(g_flags.maxwidth - strlen)) - 1 : g_flags.minwidth - strlen - \
+	fillwidth = g_flags.neg || g_flags.plus || g_flags.sp ? \
+				(g_flags.minwidth - strlen - (g_flags.maxwidth - strlen)) \
+				- 1 : g_flags.minwidth - strlen - \
 			(g_flags.maxwidth - strlen);
 	if (g_flags.dash)
 	{
@@ -200,18 +198,13 @@ int	ft_spacesandzeros(char *str, int strlen)
 		if (g_flags.plus || g_flags.sp)
 			write(1, (g_flags.plus ? "+" : " "), 1);
 		ft_filler('0', (g_flags.maxwidth - strlen));
-		ft_putstr((g_flags.neg ? &str[1] : str), strlen);
+		ft_putstr((g_flags.neg || g_flags.plus || \
+				g_flags.sp ? &str[1] : str), strlen);
 		ft_filler(' ', fillwidth);
 	}
 	else
 	{
-		ft_filler(' ', fillwidth);
-		if (g_flags.neg)
-			write(1, "-", 1);
-		if (g_flags.plus || g_flags.sp)
-			write(1, (g_flags.plus ? "+" : " "), 1);
-		ft_filler('0', (g_flags.maxwidth - strlen));
-		ft_putstr((g_flags.neg ? &str[1] : str), strlen);
+		ft_spacesandhelper(str, strlen, fillwidth);
 	}
 	return (bytes);
 }

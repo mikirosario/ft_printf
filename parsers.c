@@ -6,42 +6,11 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/19 20:23:56 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/20 23:05:40 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 13:48:42 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
-
-/*
-** Receives conversion specifier (cs) and executes the function appropriate
-** to the received cs.
-**
-** Returns the value returned by the executed function, which corresponds to
-** the number of bytes ultimately printed.
-*/
-
-int			ft_converter(char cs)
-{
-	int	*n;
-
-	if (cs == 'c' || cs == 'C' || cs == '%')
-		return (ft_charprinter());
-	else if (cs == 's')
-		return (ft_strprinter());
-	else if (cs == 'd' || cs == 'D' || cs == 'i')
-		return (ft_intprep());
-	else if (cs == 'u')
-		return (ft_uintprep());
-	else if (cs == 'p')
-		return (ft_pintprep(cs));
-	else if (cs == 'x' || cs == 'X')
-		return (ft_xintprep(cs));
-	else if (cs == 'n')
-		if ((n = va_arg(g_arglst.arg, int *)))
-			*n = g_bytes;
-
-	return (0);
-}
 
 /*
 ** This function sets the appropriate flags when width and/or precision
@@ -109,27 +78,6 @@ int			ft_widthparser(char const *format)
 }
 
 /*
-** Checks the passed character against the list of flags, and sets
-** the flags to true, as appropriate.
-*/
-
-void		ft_flagchecker(char f)
-{
-	if (f == '-')
-		g_flags.dash = 1;
-	else if (f == '0')
-		g_flags.zero = 1;
-	else if (f == '#')
-		g_flags.hash = 1;
-	else if (f == '+')
-		g_flags.plus = 1;
-	else if (f == ' ')
-		g_flags.sp = 1;
-	else if (f == '\'')
-		g_flags.apos = 1;
-}
-
-/*
 ** Parses the string passed via the pointer format looking for flags
 ** in the string flaglst. If a character in flaglst is identified in
 ** the string format, either ft_flagchecker or ft_widthparser is
@@ -163,17 +111,17 @@ char const	*ft_flagparser(char const *format)
 	int			skip;
 	char		*flaglst;
 
-	flaglst = "%-.*#+ '0123456789";
+	flaglst = "%-.*#+ 'lh0123456789";
 	i = 0;
 	ft_flaginit();
 	while ((ft_strchr(flaglst, format[i])) && format[i])
 	{
 		if (format[i] == '%')
 			break ;
-		else if (format[i] == '0' || ((!(ft_isdigit(format[i])) && format[i] != '.' && format[i] != '*')))
+		else if (format[i] == '0' || ((!(ft_isdigit(format[i])) && \
+				format[i] != '.' && format[i] != '*')))
 			ft_flagchecker(format[i++]);
-		else /*((ft_isdigit(format[i]) && format[i] != '0') ||
-				format[i] == '.' || format[i] == '*')*/
+		else
 		{
 			if (format[i] == '.')
 				g_flags.prec = 1;

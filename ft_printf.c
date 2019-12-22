@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/04 02:22:12 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/20 03:37:12 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 08:51:10 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ int			ft_printf(char const *format, ...)
 				return (-1);
 			else if ((cs = ft_strchr(cslst, *format)) && *format)
 			{
+				ft_lencheck((*(format - 1)), (*(format - 2)));
 				g_flags.pct = *format == '%' ? 1 : g_flags.pct;
 				g_bytes = g_bytes + (ft_converter(*cs));
 				format++;

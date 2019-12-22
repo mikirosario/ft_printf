@@ -6,12 +6,13 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/20 11:18:14 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/20 18:08:40 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 14:18:46 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libftprintf.h"
 #include <stdio.h>
+
 /*
 ** This function takes an integer and a string representing that integer and
 ** prints the string with the format defined by the activated format flags.
@@ -42,7 +43,7 @@
 ** following this logic. See Readme for more details.
 */
 
-int	ft_xintprinter(long long int num, char *numstr, char cs)
+int		ft_xintprinter(long long int num, char *numstr, char cs)
 {
 	int	strlen;
 	int	bytes;
@@ -53,7 +54,8 @@ int	ft_xintprinter(long long int num, char *numstr, char cs)
 	else if (g_flags.minwidth <= strlen && strlen >= g_flags.maxwidth)
 		bytes = ft_putstr(numstr, strlen + 2);
 	else if (g_flags.minwidth > strlen && strlen >= g_flags.maxwidth)
-		bytes = ft_hexspacesorzeros(numstr, strlen, (g_flags.minwidth - strlen), cs);
+		bytes = ft_hexspacesorzeros(numstr, strlen, \
+				(g_flags.minwidth - strlen), cs);
 	else if (g_flags.minwidth <= g_flags.maxwidth)
 		bytes = ft_hexonlyzeros(numstr, strlen, cs);
 	else
@@ -68,8 +70,8 @@ int	ft_xintprinter(long long int num, char *numstr, char cs)
 ** occupied by the string proper).
 **
 ** The amount of filler that needs to be printed is given by minwidth - strlen,
-** as strlen takes up spaces of a given minimum width. 
-** 
+** as strlen takes up spaces of a given minimum width.
+**
 ** Note that in the original ft_intprinter 1 is subtracted from strlen before
 ** calling the equivalent ft_spacesorzeros function, and so enters that
 ** function with strlen - 1 compared to ft_hexspacesorzeros under the same
@@ -101,20 +103,17 @@ int	ft_xintprinter(long long int num, char *numstr, char cs)
 ** case.
 */
 
-int	ft_hexspacesorzeros(char *str, int strlen, size_t fillwidth, char cs)
+int		ft_hexspacesorzeros(char *str, int strlen, size_t fillwidth, char cs)
 {
 	int	bytes;
-	bytes = g_flags.maxwidth == strlen ? g_flags.minwidth + 1 : g_flags.minwidth;
+
+	bytes = g_flags.maxwidth == strlen ? \
+			g_flags.minwidth + 1 : g_flags.minwidth;
 	fillwidth -= 1;
-//	if (g_flags.maxwidth == strlen)
-//		fillwidth++;
 	if (g_flags.dash)
 	{
 		write(1, (cs == 'X' ? "0X" : "0x"), 2);
-		if (g_flags.usrdef)
-			ft_filler('0', fillwidth); 
 		ft_putstr(&str[2], strlen);
-		if (!g_flags.usrdef)
 		ft_filler(' ', fillwidth);
 	}
 	else
@@ -157,12 +156,15 @@ int	ft_hexspacesorzeros(char *str, int strlen, size_t fillwidth, char cs)
 ** addresses, this will be the precision value + 2 to make room for the "0x".
 */
 
-int	ft_hexonlyzeros(char *str, int strlen, char cs)
+int		ft_hexonlyzeros(char *str, int strlen, char cs)
 {
-	if (g_flags.ptr || (g_flags.hash && (cs == 'x' || cs == 'X')))
+	if ((str[2] != '0') || (g_flags.ptr || (g_flags.hash && \
+		(cs == 'x' || cs == 'X'))))
 	{
-		write(1, (cs == 'X' ? "0X" : "0x"), 2);
-		strlen = strlen - 1;
+		if ((str[2] == '0' && cs == 'p') || str[2] != '0')
+			write(1, (cs == 'X' ? "0X" : "0x"), 2);
+		if (g_flags.ptr || (g_flags.hash && (cs == 'x' || cs == 'X')))
+			strlen = strlen - 1;
 	}
 	ft_filler('0', (g_flags.maxwidth - strlen));
 	ft_putstr(&str[2], strlen);
@@ -172,7 +174,8 @@ int	ft_hexonlyzeros(char *str, int strlen, char cs)
 		return (g_flags.maxwidth);
 }
 
-/* Because hexadecimal numbers being printed with '0x' will sometimes
+/*
+** Because hexadecimal numbers being printed with '0x' will sometimes
 ** omit the '0x' depending on the flags set and thus the zeros to be
 ** printed cannot be predicted by the original string width, as it
 ** may vary, they display dynamic fill behaviour.
@@ -180,33 +183,41 @@ int	ft_hexonlyzeros(char *str, int strlen, char cs)
 ** This function handles these cases similarly to ft_spacesandzeros.
 */
 
-int	ft_hexspacesandzeros(char *str, int strlen, char cs)
+int		ft_hexspacesandzeros(char *str, int strlen, char cs)
 {
-//write(1, "CHIVATO", 7);	
-
 	int	fillwidth;
 	int	bytes;
 
 	bytes = g_flags.minwidth;
 	fillwidth = g_flags.minwidth - strlen;
-	if (g_flags.maxwidth > strlen - 2 || (!g_flags.usrdef && str[2] == '0' && cs != 'p'))
+	if (g_flags.maxwidth > strlen - 2 || \
+		(!g_flags.usrdef && str[2] == '0' && cs != 'p'))
 		fillwidth = fillwidth - (g_flags.maxwidth - 1);
 	if (g_flags.dash)
 	{
-		write(1, (cs == 'X' ? "0X" : "0x"), 2);
+		if (str[2] != '0')
+			write(1, (cs == 'X' ? "0X" : "0x"), 2);
+		ft_filler('0', (g_flags.maxwidth - strlen + 1));
 		ft_putstr(&str[2], strlen);
-		ft_filler(' ', fillwidth);
+		ft_filler(' ', (str[2] == '0' ? fillwidth + 1 : fillwidth));
 	}
 	else
 	{
-		if (!g_flags.zero || g_flags.usrdef)
-			ft_filler(' ', fillwidth);
-		if (g_flags.usrdef || str[2] != '0' || cs == 'p')
-			write(1, (cs == 'X' ? "0X" : "0x"), 2);
-		if (g_flags.zero || g_flags.maxwidth > strlen - 2)
-			ft_filler('0', (g_flags.maxwidth > strlen - 2 ? g_flags.maxwidth - 2 : fillwidth));
-		ft_putstr(&str[2], strlen);
+		ft_hexspzerohelper(str, strlen, cs, fillwidth);
 	}
 	return (bytes);
 }
 
+void	ft_hexspzerohelper(char *str, int strlen, char cs, int fillwidth)
+{
+	str[2] == '0' ? fillwidth++ : fillwidth;
+	if (!g_flags.zero || g_flags.usrdef)
+		ft_filler(' ', fillwidth);
+	if (str[2] != '0' || cs == 'p')
+		write(1, (cs == 'X' ? "0X" : "0x"), 2);
+	str[2] == '0' ? g_flags.maxwidth++ : g_flags.maxwidth;
+	if (g_flags.zero || g_flags.maxwidth > strlen - 2)
+		ft_filler('0', (g_flags.maxwidth > strlen - 2 ? \
+		g_flags.maxwidth - 2 : fillwidth));
+	ft_putstr(&str[2], strlen);
+}

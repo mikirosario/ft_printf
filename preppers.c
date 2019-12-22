@@ -6,7 +6,7 @@
 /*   By: mrosario <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/17 23:34:04 by mrosario          #+#    #+#             */
-/*   Updated: 2019/12/21 01:17:28 by mrosario         ###   ########.fr       */
+/*   Updated: 2019/12/22 14:31:01 by mrosario         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,10 @@ void	ft_flaginit(void)
 	g_flags.pct = 0;
 	g_flags.minwidth = 0;
 	g_flags.maxwidth = 0;
+	g_lenspec.l = 0;
+	g_lenspec.ll = 0;
+	g_lenspec.h = 0;
+	g_lenspec.hh = 0;
 }
 
 /*
@@ -57,36 +61,28 @@ void	ft_flaginit(void)
 
 int		ft_intprep(void)
 {
-	char	*numstr;
-	char	*del;
-	int		num;
+	char			*numstr;
+	long long int	num;
 
-	num = va_arg(g_arglst.arg, int);
+	num = ft_intextract();
 	if (num < 0)
 	{
 		g_flags.neg = 1;
 		g_flags.plus = 0;
 		g_flags.sp = 0;
 	}
-	else if (!num && !g_flags.maxwidth && g_flags.usrdef && (g_flags.plus || g_flags.sp))
+	else if (!num && !g_flags.maxwidth && g_flags.usrdef && \
+			(g_flags.plus || g_flags.sp))
 	{
-		write(1, (g_flags.plus ? "+" : " "), 1);
-		return(1);
+		if (g_flags.minwidth)
+			return (ft_spacesorzeros((g_flags.plus ? "+" : " "), 1, \
+			g_flags.minwidth));
+			write(1, (g_flags.plus ? "+" : " "), 1);
+		return (1);
 	}
-	numstr = ft_itoa(num);
-	if (g_flags.apos)
-	{
-		del = numstr;
-		numstr = ft_thousep(numstr, ',');
-		free(del);
-	}
-	if (g_flags.plus || g_flags.sp)
-	{
-		del = numstr;
-		numstr = ft_strjoin((g_flags.plus ? "+" : " "), numstr);
-		free(del);
-	}
-	return (ft_intprinter((long long int)num, numstr));
+	numstr = ft_intwrite(num);
+	numstr = ft_numstrprep(numstr);
+	return (ft_intprinter(num, numstr));
 }
 
 /*
@@ -99,18 +95,12 @@ int		ft_intprep(void)
 
 int		ft_uintprep(void)
 {
-	char			*numstr;
-	char			*del;
-	unsigned int	num;
+	char					*numstr;
+	unsigned long long int	num;
 
-	num = va_arg(g_arglst.arg, unsigned int);
-	numstr = ft_llitoa((long long int)num);
-	if (g_flags.apos)
-	{
-		del = numstr;
-		numstr = ft_thousep(numstr, ',');
-		free(del);
-	}
+	num = ft_uintextract();
+	numstr = ft_uintwrite(num);
+	numstr = ft_unumstrprep(numstr);
 	return (ft_intprinter((long long int)num, numstr));
 }
 
@@ -127,31 +117,19 @@ int		ft_uintprep(void)
 
 int		ft_xintprep(char cs)
 {
-	char			*numstr;
-	char			*del;
-	unsigned int	num;
+	char					*numstr;
+	unsigned long long int	num;
 
-	num = va_arg(g_arglst.arg, unsigned int);
+	num = ft_uintextract();
 	if (!num && g_flags.maxwidth == 0 && g_flags.usrdef && g_flags.hash)
 		numstr = ft_strdup((cs == 'x' ? "0x" : "0X"));
 	else if (!num && !g_flags.usrdef && g_flags.hash)
 		return (ft_intprinter((long long int)num, (numstr = ft_strdup("0"))));
-	else if (g_flags.hash)
-	{
-		numstr = ft_llitoa_base((long long int)num, 16);
-		del = numstr;
-		if (cs == 'x')
-			ft_strtolower(numstr);
-		numstr = ft_strjoin((cs == 'x' ? "0x" : "0X"), numstr);
-		free(del);
-	}
 	else
-	{
-		numstr = ft_llitoa_base((long long int)num, 16);
-		if (cs == 'x')
-			ft_strtolower(numstr);
-	}
-	return ((cs == 'p' || (g_flags.hash && (cs == 'x' || cs == 'X'))) ? ft_xintprinter((long long int)num, numstr, cs) : ft_intprinter((long long int)num, numstr));
+		numstr = ft_xintprefixhandler(num, cs);
+	return ((cs == 'p' || (g_flags.hash && (cs == 'x' || cs == 'X'))) ? \
+			ft_xintprinter((unsigned long long int)num, numstr, cs) : \
+			ft_intprinter((long long int)num, numstr));
 }
 
 /*
@@ -196,5 +174,5 @@ int		ft_pintprep(char cs)
 		numstr = ft_strjoin("0x", numstr);
 		free(del);
 	}
-	return (ft_xintprinter((long long int)num, numstr, cs));
+	return (ft_xintprinter((unsigned long long int)num, numstr, cs));
 }
